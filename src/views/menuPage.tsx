@@ -8,11 +8,59 @@ import {
   Tabs,
   InputBase,
   Tab,
+  Snackbar,
 } from "@mui/material";
 
-import { menuData } from "../data/menu.ts";
+import { restaurantMenuData } from "../data/restaurantMenu.ts";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Menu = () => {
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [cart, setCart] = useState<{ [key: string]: number }>(() => {
+    const savedCart = localStorage.getItem("cart");
+    return savedCart ? JSON.parse(savedCart) : {};
+  });
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const navigate = useNavigate();
+
+  // 메뉴 추가
+  const handleAddToCart = (menuName: string) => {
+    setCart((prev) => {
+      const newCart = {
+        ...prev,
+        [menuName]: (prev[menuName] || 0) + 1,
+      };
+
+      localStorage.setItem("cart", JSON.stringify(newCart));
+
+      return newCart;
+    });
+
+    setSnackbarOpen(true);
+  };
+
+  // 메뉴 수량 감소 or 삭제
+  const handleDecrease = (menuName: string) => {
+    setCart((prev) => {
+      const newCart = { ...prev };
+      if (newCart[menuName] === 1) {
+        delete newCart[menuName];
+      } else {
+        newCart[menuName] -= 1;
+      }
+      return newCart;
+    });
+  };
+
+  // 메뉴 증가
+  const handleIncrease = (menuName: string) => {
+    setCart((prev) => ({
+      ...prev,
+      [menuName]: prev[menuName] + 1,
+    }));
+  };
+
   return (
     <Box
       sx={{
@@ -87,19 +135,25 @@ const Menu = () => {
               borderBottom: "1px solid #ddd",
             }}
           >
-            {["추천", "한식", "분식", "라면·우동", "덮밥"].map((item, idx) => (
+            {Object.keys(restaurantMenuData).map((category, idx) => (
               <Button
                 key={idx}
-                variant={idx === 0 ? "outlined" : "text"}
+                variant={selectedCategory === category ? "outlined" : "text"}
                 size="small"
                 sx={{
                   borderRadius: "999px",
                   m: 0.5,
                   flexShrink: 0,
                   whiteSpace: "nowrap",
+                  fontSize: 12,
                 }}
+                onClick={() =>
+                  setSelectedCategory((prev) =>
+                    prev === category ? "" : category
+                  )
+                }
               >
-                {item}
+                {category}
               </Button>
             ))}
           </Box>
@@ -116,44 +170,39 @@ const Menu = () => {
       >
         {/* 메뉴 리스트 */}
         <Box>
-          {Object.entries(menuData).map(
-            ([category, items], catIdx, catArray) => (
+          {selectedCategory === "" ? (
+            // 전체 메뉴 출력
+            Object.entries(restaurantMenuData).map(([category, items]) => (
               <Box key={category}>
                 <Typography fontWeight="bold" sx={{ m: 2 }}>
                   {category}
                 </Typography>
-
                 <Stack spacing={1}>
-                  {items.map((item, idx) => {
-                    const isLastCategory = catIdx === catArray.length - 1;
-                    const isLastItem = idx === items.length - 1;
-                    return (
-                      <Box key={item.name}>
-                        <Typography sx={{ ml: 2, mr: 2 }}>
+                  {items.map((item, idx, array) => (
+                    <Box key={item.name}>
+                      <Button
+                        disableRipple
+                        onClick={() => handleAddToCart(item.name)}
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "start",
+                          width: "60%",
+                          ml: 2,
+                        }}
+                      >
+                        <Typography sx={{ color: "black" }}>
                           {item.name}
                         </Typography>
-                        <Typography
-                          sx={{ ml: 2, mr: 2 }}
-                          color="text.secondary"
-                        >
+                        <Typography sx={{ color: "black" }}>
                           {item.price.toLocaleString()}원
                         </Typography>
-                        {idx !== items.length - 1 && (
-                          <Divider
-                            sx={{
-                              mt: 2,
-                              mb: 1,
-                              ml: 2,
-                              mr: 2,
-                            }}
-                          />
-                        )}
-                        {isLastItem && isLastCategory && (
-                          <Box sx={{ height: 20 }} />
-                        )}
-                      </Box>
-                    );
-                  })}
+                      </Button>
+                      {idx !== array.length - 1 && (
+                        <Divider sx={{ mt: 2, mb: 1, ml: 2, mr: 2 }} />
+                      )}
+                    </Box>
+                  ))}
                 </Stack>
                 <Divider
                   sx={{
@@ -162,9 +211,43 @@ const Menu = () => {
                   }}
                 />
               </Box>
-            )
+            ))
+          ) : (
+            // 선택한 카테고리 메뉴 출력
+            <Box>
+              <Typography fontWeight="bold" sx={{ m: 2 }}>
+                {selectedCategory}
+              </Typography>
+              <Stack spacing={1}>
+                {restaurantMenuData[selectedCategory].map(
+                  (item, idx, array) => (
+                    <Box key={item.name}>
+                      <Button
+                        onClick={() => handleAddToCart(item.name)}
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "start",
+                          width: "60%",
+                          ml: 2,
+                        }}
+                      >
+                        <Typography sx={{ color: "black" }}>
+                          {item.name}
+                        </Typography>
+                        <Typography sx={{ color: "black" }}>
+                          {item.price.toLocaleString()}원
+                        </Typography>
+                      </Button>
+                      {idx !== array.length - 1 && (
+                        <Divider sx={{ mt: 2, mb: 1, ml: 2, mr: 2 }} />
+                      )}
+                    </Box>
+                  )
+                )}
+              </Stack>
+            </Box>
           )}
-          ;
         </Box>
         <Box
           sx={{
@@ -183,12 +266,38 @@ const Menu = () => {
             py: 1.5,
           }}
         >
-          <Typography>담긴 메뉴 : 2개</Typography>
-          <Button variant="text" sx={{ color: "white" }}>
+          <Button
+            onClick={() => navigate("/cart")} // 장바구니 페이지로 이동
+            sx={{
+              color: "white",
+              padding: 0,
+              minWidth: "auto",
+              textTransform: "none", // 버튼 글자 소문자 유지
+            }}
+          >
+            <Typography>
+              담긴 메뉴 :{" "}
+              {Object.values(cart).reduce((acc, quantity) => acc + quantity, 0)}
+              개
+            </Typography>
+          </Button>
+          <Button
+            variant="text"
+            onClick={() => navigate("/cart")}
+            sx={{ color: "white" }}
+          >
             주문하기
           </Button>
         </Box>
       </Box>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2000} // 2초 뒤 자동 닫힘 (원하면 조절 가능)
+        onClose={() => setSnackbarOpen(false)}
+        message="선택하신 메뉴가 추가되었습니다."
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        sx={{ mb: 10 }}
+      />
     </Box>
   );
 };
