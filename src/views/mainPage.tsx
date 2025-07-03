@@ -16,15 +16,13 @@ const Main = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        padding: 2,
       }}
     >
-      <Paper
+      <Box
         sx={{
           width: 400, // 앱 느낌 너비 제한
-          borderRadius: 2,
           overflow: "hidden",
-          boxShadow: 3,
+          minHeight: "100vh",
         }}
       >
         {/* 지도 (빈 박스) */}
@@ -90,7 +88,7 @@ const Main = () => {
             </Box>
           ))}
         </Box>
-      </Paper>
+      </Box>
     </Box>
   );
 };

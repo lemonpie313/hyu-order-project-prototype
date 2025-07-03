@@ -1,14 +1,24 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { CssBaseline } from "@mui/material";
-import Main from "./views/mainPage.tsx"
+import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
+import Main from "./views/mainPage.tsx";
+import Menu from "./views/menuPage.tsx";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: "Pretendard Variable",
+  },
+});
 
 function App() {
   return (
     <BrowserRouter>
-      <CssBaseline />
-      <Routes>
-        <Route path="/main" element={<Main />} />
-      </Routes>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Routes>
+          <Route path="/main" element={<Main />} />
+          <Route path="/menu" element={<Menu />} />
+        </Routes>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }
