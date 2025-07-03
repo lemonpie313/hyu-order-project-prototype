@@ -23,6 +23,7 @@ const Main = () => {
 
   const handleConfirm = () => {
     setPopupOpen(false);
+    localStorage.setItem('selectedRestArea', selectedRestArea);
     navigate("/menu");
   };
 
