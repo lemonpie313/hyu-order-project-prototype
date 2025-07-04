@@ -14,16 +14,29 @@ interface MenuProps {
   onAddToCart: (menuName: string, price: number) => void;
 }
 
-const Menu = ({ restAreaId, categoryId, subCategoryId, onAddToCart }: MenuProps) => {
+const Menu = ({
+  restAreaId,
+  categoryId,
+  subCategoryId,
+  onAddToCart,
+}: MenuProps) => {
   let selectedMenuObj: any = null;
 
   if (restAreaId === 1) {
     if (categoryId === 1) {
       selectedMenuObj = restAreaMenu_1_1;
+    } else if (categoryId === 2) {
+      selectedMenuObj = restAreaMenu_1_2;
+    } else {
+      selectedMenuObj = restAreaMenu_1_3;
     }
   } else if (restAreaId === 2) {
     if (categoryId === 1) {
       selectedMenuObj = restAreaMenu_1_1;
+    } else if (categoryId === 2) {
+      selectedMenuObj = restAreaMenu_1_2;
+    } else {
+      selectedMenuObj = restAreaMenu_1_3;
     }
   }
 

@@ -27,9 +27,7 @@ export const restAreaMenu_1_1 = {
     {
       subCategoryId: 3,
       subCategoryName: "분식",
-      items: [
-        { menuId: 9, menuName: "돈까스 정식", price: 9000 },
-      ],
+      items: [{ menuId: 9, menuName: "돈까스 정식", price: 9000 }],
     },
     {
       subCategoryId: 4,

@@ -4,54 +4,38 @@ export const restAreaMenu_2_2 = {
   categoryName: "스낵바",
   menus: [
     {
-      menuId: 1,
-      menuName: "핫도그",
-      price: 3000,
+      subCategoryId: 15,
+      subCategoryName: "추천",
+      items: [
+        { menuId: 42, menuName: "회오리감자", price: 2000 },
+        { menuId: 43, menuName: "호두과자 8개입", price: 3000 },
+      ],
     },
     {
-      menuId: 2,
-      menuName: "어묵꼬치",
-      price: 2500,
+      subCategoryId: 16,
+      subCategoryName: "감자",
+      items: [
+        { menuId: 44, menuName: "감자튀김", price: 3500 },
+        { menuId: 45, menuName: "회오리감자", price: 2000 },
+      ],
     },
     {
-      menuId: 3,
-      menuName: "떡볶이",
-      price: 4000,
+      subCategoryId: 17,
+      subCategoryName: "호두과자",
+      items: [
+        { menuId: 46, menuName: "호두과자 8개입", price: 3000 },
+        { menuId: 47, menuName: "호두과자 15개입", price: 5000 },
+      ],
     },
     {
-      menuId: 4,
-      menuName: "순대",
-      price: 4500,
-    },
-    {
-      menuId: 5,
-      menuName: "튀김모둠",
-      price: 4500,
-    },
-    {
-      menuId: 6,
-      menuName: "잔치국수",
-      price: 5000,
-    },
-    {
-      menuId: 7,
-      menuName: "김밥",
-      price: 3500,
-    },
-    {
-      menuId: 8,
-      menuName: "치즈볼",
-      price: 4000,
-    },
-    {
-      menuId: 9,
-      menuName: "감자튀김",
-      price: 3500,
-    },
-    {
-      menuId: 10,
-      menuName: "찐만두",
-      price: 4000,
+      subCategoryId: 18,
+      subCategoryName: "핫도그/핫바",
+      items: [
+        { menuId: 48, menuName: "핫도그", price: 3000 },
+        { menuId: 49, menuName: "어묵꼬치", price: 2500 },
+        { menuId: 50, menuName: "치즈볼", price: 4000 },
+        { menuId: 51, menuName: "찐만두", price: 4000 },
+      ],
     },
   ],
 };

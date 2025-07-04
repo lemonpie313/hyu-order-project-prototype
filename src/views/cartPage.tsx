@@ -42,6 +42,10 @@ const CartPage = () => {
     }
   }, [restAreaName]);
 
+  const categoryId = restAreas.find(
+    (area) => area.restAreaId == 1
+  )?.defaultCategoryId;
+
   return (
     <Box
       sx={{
@@ -125,7 +129,7 @@ const CartPage = () => {
             >
               <Box>
                 <Typography>{menu}</Typography>
-                <Typography color="text.secondary">{`${8000}원`}</Typography>
+                <Typography color="text.secondary">{`${item.price}원`}</Typography>
               </Box>
               {/* 여기도 가격 연동 필요 */}
               <SetQuantity
@@ -141,6 +145,9 @@ const CartPage = () => {
           <Typography
             color="primary"
             sx={{ textAlign: "center", cursor: "pointer" }}
+            onClick={() =>
+              navigate(`../${selectedRestAreaId}/menu/${categoryId}`)
+            }
           >
             + 메뉴 추가
           </Typography>
@@ -180,7 +187,7 @@ const CartPage = () => {
         <Divider sx={{ my: 3 }} />
 
         {/* 결제 방법 (비워둠) */}
-        <Box sx={{ px: 2 }}>
+        <Box sx={{ px: 2, mb: 10 }}>
           <Typography fontWeight="bold" sx={{ mb: 2 }}>
             결제 방법
           </Typography>
@@ -190,12 +197,26 @@ const CartPage = () => {
         <Button
           fullWidth
           variant="contained"
+          onClick={() => {
+            const orderData = {
+              restAreaId: selectedRestAreaId,
+              items: Object.entries(cart).map(([menuName, item]) => ({
+                menuName,
+                quantity: item.quantity,
+                price: item.price,
+              })),
+            };
+            localStorage.setItem("order", JSON.stringify(orderData));
+            navigate("../order");
+          }}
           sx={{
             position: "fixed",
             maxWidth: 500,
             width: "100%",
             bottom: 0,
             borderRadius: 0,
+            height: 50,
+            backgroundColor: "#00796b",
           }}
         >
           주문하기
