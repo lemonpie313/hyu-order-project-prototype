@@ -1,7 +1,7 @@
 import { Typography, Box, Button, Divider, Stack } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Popup from "../components/PopUp.tsx";
+import AlarmRestAreaPopup from "../components/AlarmRestAreaPopUp.tsx";
 import cafe from "../assets/icons/cafe.png";
 import food from "../assets/icons/food.png";
 import gas from "../assets/icons/gas.png";
@@ -248,7 +248,7 @@ const MainPage = () => {
         </Box>
       </Box>
       {/* 팝업 */}
-      <Popup
+      <AlarmRestAreaPopup
         open={popupOpen}
         selectedRestArea={selectedRestArea}
         onConfirm={handleConfirm}

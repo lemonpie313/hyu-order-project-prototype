@@ -7,7 +7,7 @@ interface PopupProps {
   selectedRestArea: string;
 }
 
-const Popup = ({ open, onConfirm, onCancel, selectedRestArea }: PopupProps) => {
+const AlarmRestAreaPopup = ({ open, onConfirm, onCancel, selectedRestArea }: PopupProps) => {
   if (!open) return null; // 열려있지 않으면 안 보이게
 
   return (
@@ -63,4 +63,4 @@ const Popup = ({ open, onConfirm, onCancel, selectedRestArea }: PopupProps) => {
   );
 };
 
-export default Popup;
+export default AlarmRestAreaPopup;

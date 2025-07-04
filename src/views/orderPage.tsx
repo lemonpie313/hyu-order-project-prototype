@@ -12,6 +12,7 @@ import my from "../assets/icons/my.png";
 import orders from "../assets/icons/orders.png";
 import search from "../assets/icons/search.png";
 import { restAreas } from "../data/restAreas.ts";
+import OrderNumberPopup from "../components/OrderNumberPopUp.tsx";
 
 const steps = ["주문 접수", "조리 중", "조리 완료"];
 
@@ -24,6 +25,7 @@ const OrderPage = () => {
   const [showCancelButton, setShowCancelButton] = useState(true);
   const [showDelayButton, setShowDelayButton] = useState(false);
   const [showOrderNumButton, setShowOrderNumButton] = useState(false);
+  const [popupOpen, setPopupOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -59,6 +61,10 @@ const OrderPage = () => {
   const restAreaName =
     restAreas.find((area) => String(area.restAreaId) === String(restAreaId))
       ?.restAreaName || "휴게소 정보 없음";
+
+  const handleClose = () => {
+    setPopupOpen(false);
+  };
 
   return (
     <Box
@@ -187,7 +193,9 @@ const OrderPage = () => {
             )}
             {showOrderNumButton && (
               <Button
-                onClick={() => {console.log("0000")}}
+                onClick={() => {
+                  setPopupOpen(true)
+                }}
                 sx={{
                   mt: 2,
                   border: "none",
@@ -303,6 +311,12 @@ const OrderPage = () => {
           </Box>
         </Box>
       </Box>
+      {/* 팝업 */}
+      <OrderNumberPopup
+        open={popupOpen}
+        onConfirm={handleClose}
+        orderData={orderData}
+      />
     </Box>
   );
 };
