@@ -1,7 +1,7 @@
 import { Typography, Box, Button, Divider, Stack } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Popup from "../components/pop-up";
+import Popup from "../components/PopUp.tsx";
 import cafe from "../assets/icons/cafe.png";
 import food from "../assets/icons/food.png";
 import gas from "../assets/icons/gas.png";
@@ -24,6 +24,7 @@ const Main = () => {
   const handleConfirm = () => {
     setPopupOpen(false);
     localStorage.setItem('selectedRestArea', selectedRestArea);
+    localStorage.setItem(selectedRestArea, '{}');
     navigate("/menu");
   };
 

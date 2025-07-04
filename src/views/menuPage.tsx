@@ -12,53 +12,50 @@ import {
 } from "@mui/material";
 
 import { restaurantMenuData } from "../data/restaurantMenu.ts";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Menu = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [cart, setCart] = useState<{ [key: string]: number }>(() => {
-    const savedCart = localStorage.getItem("cart");
-    return savedCart ? JSON.parse(savedCart) : {};
-  });
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const navigate = useNavigate();
+  const [alertOpen, setAlertOpen] = useState(false);
+
+  const selectedRestArea: string =
+    localStorage.getItem("selectedRestArea") || "none";
+
+  type CartItem = {
+    quantity: number;
+    price: number;
+  };
+
+  const [cart, setCart] = useState<{ [key: string]: CartItem }>({});
+
+  useEffect(() => {
+    if (selectedRestArea !== "none") {
+      const savedCart = localStorage.getItem(selectedRestArea);
+      if (savedCart) {
+        setCart(JSON.parse(savedCart));
+      }
+    }
+  }, [selectedRestArea]);
 
   // 메뉴 추가
-  const handleAddToCart = (menuName: string) => {
+  const handleAddToCart = (menuName: string, price: number) => {
     setCart((prev) => {
       const newCart = {
         ...prev,
-        [menuName]: (prev[menuName] || 0) + 1,
+        [menuName]: {
+          quantity: (prev[menuName]?.quantity || 0) + 1,
+          price, // 가격도 저장
+        },
       };
 
-      localStorage.setItem("cart", JSON.stringify(newCart));
-
+      localStorage.setItem(selectedRestArea, JSON.stringify(newCart));
       return newCart;
     });
 
     setSnackbarOpen(true);
-  };
-
-  // 메뉴 수량 감소 or 삭제
-  const handleDecrease = (menuName: string) => {
-    setCart((prev) => {
-      const newCart = { ...prev };
-      if (newCart[menuName] === 1) {
-        delete newCart[menuName];
-      } else {
-        newCart[menuName] -= 1;
-      }
-      return newCart;
-    });
-  };
-
-  // 메뉴 증가
-  const handleIncrease = (menuName: string) => {
-    setCart((prev) => ({
-      ...prev,
-      [menuName]: prev[menuName] + 1,
-    }));
   };
 
   return (
@@ -182,7 +179,7 @@ const Menu = () => {
                     <Box key={item.name}>
                       <Button
                         disableRipple
-                        onClick={() => handleAddToCart(item.name)}
+                        onClick={() => handleAddToCart(item.name, item.price)}
                         sx={{
                           display: "flex",
                           flexDirection: "column",
@@ -223,7 +220,7 @@ const Menu = () => {
                   (item, idx, array) => (
                     <Box key={item.name}>
                       <Button
-                        onClick={() => handleAddToCart(item.name)}
+                        onClick={() => handleAddToCart(item.name, item.price)}
                         sx={{
                           display: "flex",
                           flexDirection: "column",
@@ -266,8 +263,8 @@ const Menu = () => {
             py: 1.5,
           }}
         >
-          <Button
-            onClick={() => navigate("/cart")} // 장바구니 페이지로 이동
+          <Box
+            // onClick={() => navigate("/cart")} // 장바구니 페이지로 이동
             sx={{
               color: "white",
               padding: 0,
@@ -277,13 +274,27 @@ const Menu = () => {
           >
             <Typography>
               담긴 메뉴 :{" "}
-              {Object.values(cart).reduce((acc, quantity) => acc + quantity, 0)}
+              {Object.values(cart).reduce(
+                (acc, item) => acc + item.quantity,
+                0
+              )}
               개
             </Typography>
-          </Button>
+          </Box>
           <Button
             variant="text"
-            onClick={() => navigate("/cart")}
+            onClick={() => {
+              const totalItems = Object.values(cart).reduce(
+                (acc, item) => acc + item.quantity,
+                0
+              );
+
+              if (totalItems === 0) {
+                setAlertOpen(true); // 팝업 띄우기
+              } else {
+                navigate("/cart"); // 장바구니 페이지로 이동
+              }
+            }}
             sx={{ color: "white" }}
           >
             주문하기
@@ -296,7 +307,15 @@ const Menu = () => {
         onClose={() => setSnackbarOpen(false)}
         message="선택하신 메뉴가 추가되었습니다."
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        sx={{ mb: 10 }}
+        sx={{ mb: 10, maxWidth: 500, width: "100%", mx: "auto" }}
+      />
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={2000} // 2초 뒤 자동 종료
+        onClose={() => setAlertOpen(false)}
+        message="메뉴를 먼저 담아주세요."
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        sx={{ mb: 10, maxWidth: 500, width: "100%", mx: "auto" }}
       />
     </Box>
   );
