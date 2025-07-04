@@ -12,8 +12,9 @@ import TrashCanIcon from "../assets/icons/trashcan.png";
 import MinusIcon from "../assets/icons/minus.png";
 import PlusIcon from "../assets/icons/plus.png";
 import SetQuantity from "../components/SetQuantity.tsx";
+import { restAreas } from "../data/restAreas.ts";
 
-const Cart = () => {
+const CartPage = () => {
   const navigate = useNavigate();
 
   type CartItem = {
@@ -23,22 +24,23 @@ const Cart = () => {
 
   const [cart, setCart] = useState<{ [key: string]: CartItem }>({});
 
-  const selectedRestArea: string =
-    localStorage.getItem("selectedRestArea") || "none";
-
-  useEffect(() => {
-    if (selectedRestArea !== "none") {
-      const savedCart = localStorage.getItem(selectedRestArea);
-      if (savedCart) {
-        setCart(JSON.parse(savedCart));
-      }
-    }
-  }, [selectedRestArea]);
+  const selectedRestAreaId = localStorage.getItem("selectedRestArea");
+  const selectedRestArea = restAreas.find(
+    (area) => String(area.restAreaId) === selectedRestAreaId
+  )?.restAreaName;
+  const restAreaName = selectedRestArea ? selectedRestArea : "휴게소 선택 안됨";
 
   const totalPrice = Object.values(cart).reduce(
     (acc, item) => acc + item.quantity * item.price,
     0
   );
+
+  useEffect(() => {
+    const savedCart = localStorage.getItem(restAreaName);
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, [restAreaName]);
 
   return (
     <Box
@@ -75,7 +77,7 @@ const Cart = () => {
           }}
         >
           <Typography variant="subtitle1">
-            {localStorage.getItem("selectedRestArea") || "휴게소 선택 안됨"}
+            {restAreaName || "휴게소 선택 안됨"}
           </Typography>
         </Box>
 
@@ -131,7 +133,7 @@ const Cart = () => {
                 quantity={item.quantity}
                 price={item.price}
                 cart={cart}
-                selectedRestArea={selectedRestArea}
+                selectedRestArea={restAreaName}
                 setCart={setCart}
               />
             </Box>
@@ -203,4 +205,4 @@ const Cart = () => {
   );
 };
 
-export default Cart;
+export default CartPage;

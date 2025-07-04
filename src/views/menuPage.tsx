@@ -5,24 +5,36 @@ import {
   Divider,
   Stack,
   Paper,
-  Tabs,
   InputBase,
-  Tab,
   Snackbar,
 } from "@mui/material";
 
-import { restaurantMenuData } from "../data/restaurantMenu.ts";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { restAreas } from "../data/restAreas.ts";
+import Category from "../components/Category.tsx";
+import SubCategory from "../components/SubCategory.tsx";
+import Menu from "../components/Menu.tsx";
 
-const Menu = () => {
-  const [selectedCategory, setSelectedCategory] = useState("");
+const MenuPage = () => {
+  const { restAreaId, categoryId } = useParams();
+  const [selectedCategory, setSelectedCategory] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const navigate = useNavigate();
   const [alertOpen, setAlertOpen] = useState(false);
 
-  const selectedRestArea: string =
-    localStorage.getItem("selectedRestArea") || "none";
+  const restAreaIdNum = Number(restAreaId) || 0;
+  const categoryIdNum = Number(categoryId) || 0;
+
+  const [selectedCategoryId, setSelectedCategoryId] = useState(categoryIdNum);
+  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState(1);
+
+  // restAreas에서 id가 일치하는 휴게소 찾기
+  const selectedRestArea = restAreas.find(
+    (restArea: any) => String(restArea.restAreaId) === restAreaId
+  );
+
+  const restAreaName = selectedRestArea ? selectedRestArea.restAreaName : "";
 
   type CartItem = {
     quantity: number;
@@ -32,8 +44,8 @@ const Menu = () => {
   const [cart, setCart] = useState<{ [key: string]: CartItem }>({});
 
   useEffect(() => {
-    if (selectedRestArea !== "none") {
-      const savedCart = localStorage.getItem(selectedRestArea);
+    if (restAreaId !== "") {
+      const savedCart = localStorage.getItem(restAreaName);
       if (savedCart) {
         setCart(JSON.parse(savedCart));
       }
@@ -51,7 +63,7 @@ const Menu = () => {
         },
       };
 
-      localStorage.setItem(selectedRestArea, JSON.stringify(newCart));
+      localStorage.setItem(restAreaName, JSON.stringify(newCart));
       return newCart;
     });
 
@@ -112,49 +124,20 @@ const Menu = () => {
           </Box>
         </Box>
         {/* 카테고리 탭 */}
-        <Box sx={{ backgroundColor: "white" }}>
-          <Tabs
-            variant="fullWidth"
-            textColor="inherit"
-            indicatorColor="secondary"
-          >
-            <Tab label="식당" />
-            <Tab label="스낵바" />
-            <Tab label="카페" />
-            <Tab label="기타" />
-          </Tabs>
-
-          {/* 하위 탭 */}
-          <Box
-            sx={{
-              display: "flex",
-              overflowX: "auto",
-              borderBottom: "1px solid #ddd",
-            }}
-          >
-            {Object.keys(restaurantMenuData).map((category, idx) => (
-              <Button
-                key={idx}
-                variant={selectedCategory === category ? "outlined" : "text"}
-                size="small"
-                sx={{
-                  borderRadius: "999px",
-                  m: 0.5,
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  fontSize: 12,
-                }}
-                onClick={() =>
-                  setSelectedCategory((prev) =>
-                    prev === category ? "" : category
-                  )
-                }
-              >
-                {category}
-              </Button>
-            ))}
-          </Box>
-        </Box>
+        <Category
+          restAreaId={restAreaIdNum}
+          selectedCategoryId={selectedCategoryId}
+          onCategoryChange={(categoryId, firstSubCategoryId) => {
+            setSelectedCategoryId(categoryId);
+            setSelectedSubCategoryId(firstSubCategoryId);
+          }}
+        />
+        <SubCategory
+          restAreaId={restAreaIdNum}
+          categoryId={selectedCategoryId}
+          selectedSubCategoryId={selectedSubCategoryId}
+          onSubCategoryChange={(id) => setSelectedSubCategoryId(id)}
+        />
       </Box>
 
       <Box
@@ -166,86 +149,8 @@ const Menu = () => {
         }}
       >
         {/* 메뉴 리스트 */}
-        <Box>
-          {selectedCategory === "" ? (
-            // 전체 메뉴 출력
-            Object.entries(restaurantMenuData).map(([category, items]) => (
-              <Box key={category}>
-                <Typography fontWeight="bold" sx={{ m: 2 }}>
-                  {category}
-                </Typography>
-                <Stack spacing={1}>
-                  {items.map((item, idx, array) => (
-                    <Box key={item.name}>
-                      <Button
-                        disableRipple
-                        onClick={() => handleAddToCart(item.name, item.price)}
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "start",
-                          width: "60%",
-                          ml: 2,
-                        }}
-                      >
-                        <Typography sx={{ color: "black" }}>
-                          {item.name}
-                        </Typography>
-                        <Typography sx={{ color: "black" }}>
-                          {item.price.toLocaleString()}원
-                        </Typography>
-                      </Button>
-                      {idx !== array.length - 1 && (
-                        <Divider sx={{ mt: 2, mb: 1, ml: 2, mr: 2 }} />
-                      )}
-                    </Box>
-                  ))}
-                </Stack>
-                <Divider
-                  sx={{
-                    my: 2,
-                    borderBottomWidth: 5,
-                  }}
-                />
-              </Box>
-            ))
-          ) : (
-            // 선택한 카테고리 메뉴 출력
-            <Box>
-              <Typography fontWeight="bold" sx={{ m: 2 }}>
-                {selectedCategory}
-              </Typography>
-              <Stack spacing={1}>
-                {restaurantMenuData[selectedCategory].map(
-                  (item, idx, array) => (
-                    <Box key={item.name}>
-                      <Button
-                        onClick={() => handleAddToCart(item.name, item.price)}
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "start",
-                          width: "60%",
-                          ml: 2,
-                        }}
-                      >
-                        <Typography sx={{ color: "black" }}>
-                          {item.name}
-                        </Typography>
-                        <Typography sx={{ color: "black" }}>
-                          {item.price.toLocaleString()}원
-                        </Typography>
-                      </Button>
-                      {idx !== array.length - 1 && (
-                        <Divider sx={{ mt: 2, mb: 1, ml: 2, mr: 2 }} />
-                      )}
-                    </Box>
-                  )
-                )}
-              </Stack>
-            </Box>
-          )}
-        </Box>
+        <Menu restAreaId={restAreaIdNum} categoryId={selectedCategoryId} subCategoryId={selectedSubCategoryId} onAddToCart={handleAddToCart} />
+
         <Box
           sx={{
             position: "fixed",
@@ -321,4 +226,4 @@ const Menu = () => {
   );
 };
 
-export default Menu;
+export default MenuPage;

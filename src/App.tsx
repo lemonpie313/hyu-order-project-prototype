@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
-import Main from "./views/mainPage.tsx";
-import Menu from "./views/menuPage.tsx";
-import Cart from "./views/cartPage.tsx";
+import MainPage from "./views/mainPage.tsx";
+import MenuPage from "./views/menuPage.tsx";
+import CartPage from "./views/cartPage.tsx";
 
 const theme = createTheme({
   typography: {
@@ -16,9 +16,9 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Routes>
-          <Route path="/main" element={<Main />} />
-          <Route path="/menu" element={<Menu />} />
-          <Route path="/cart" element={<Cart />} />
+          <Route path="/main" element={<MainPage />} />
+          <Route path="/:restAreaId/menu/:categoryId" element={<MenuPage />} />
+          <Route path="/cart" element={<CartPage />} />
         </Routes>
       </ThemeProvider>
     </BrowserRouter>

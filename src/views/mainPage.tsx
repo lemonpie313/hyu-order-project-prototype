@@ -10,22 +10,28 @@ import home from "../assets/icons/home.png";
 import my from "../assets/icons/my.png";
 import orders from "../assets/icons/orders.png";
 import search from "../assets/icons/search.png";
+import { restAreas } from "../data/restAreas.ts";
 
-const Main = () => {
+const MainPage = () => {
   const navigate = useNavigate();
   const [popupOpen, setPopupOpen] = useState(false);
   const [selectedRestArea, setSelectedRestArea] = useState("");
+  const [selectedRestAreaId, setSelectedRestAreaId] = useState(0);
 
-  const handleOrder = (restArea: string) => {
+  const handleOrder = (restArea: string, restAreaId: number) => {
     setSelectedRestArea(restArea);
+    setSelectedRestAreaId(restAreaId);
     setPopupOpen(true);
   };
 
+  const icons = [cafe, food, gas, restroom]
+
   const handleConfirm = () => {
     setPopupOpen(false);
-    localStorage.setItem('selectedRestArea', selectedRestArea);
-    localStorage.setItem(selectedRestArea, '{}');
-    navigate("/menu");
+    localStorage.setItem("selectedRestArea", String(selectedRestAreaId));
+    localStorage.setItem(selectedRestArea, "{}");
+    const categoryId = restAreas.find((area) => area.restAreaId == 1)?.defaultCategoryId
+    navigate(`/${selectedRestAreaId}/menu/${categoryId}`);
   };
 
   const handleCancel = () => {
@@ -79,157 +85,68 @@ const Main = () => {
             </Box>
 
             <Stack spacing={2}>
-              {/* 첫번째 휴게소 */}
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
+              {restAreas.map((area) => (
                 <Box
+                  key={area.restAreaId}
                   sx={{
                     display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
+                    flexDirection: "row",
                     justifyContent: "space-between",
                   }}
                 >
-                  <Typography fontSize={16} fontWeight={500}>
-                    가평휴게소 서울방향
-                  </Typography>
-                  <Box sx={{ display: "flex", flexDirection: "row" }}>
-                    <Box
-                      component="img"
-                      src={cafe}
-                      alt=".."
-                      sx={{ width: 30, aspectRatio: "1 / 1" }}
-                    />
-                    <Box
-                      component="img"
-                      src={food}
-                      alt=".."
-                      sx={{ width: 30, aspectRatio: "1 / 1" }}
-                    />
-                    <Box
-                      component="img"
-                      src={gas}
-                      alt=".."
-                      sx={{ width: 30, aspectRatio: "1 / 1" }}
-                    />
-                    <Box
-                      component="img"
-                      src={restroom}
-                      alt=".."
-                      sx={{ width: 30, aspectRatio: "1 / 1" }}
-                    />
-                  </Box>
-                </Box>
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-end",
-                    justifyContent: "space-between",
-                    gap: 1,
-                  }}
-                >
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      handleOrder("가평 휴게소 서울 방향");
-                    }}
+                  <Box
                     sx={{
-                      width: "100%",
-                      borderRadius: 0,
-                      backgroundColor: "#097969",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      justifyContent: "space-between",
                     }}
                   >
-                    주문하기
-                  </Button>
-                  <Typography color="text.secondary" sx={{ fontSize: "14px" }}>
-                    도착 예정 시간 10:20
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Divider />
-
-              {/* 두번째 휴게소 */}
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Typography fontSize={16} fontWeight={500}>
-                    가평휴게소 춘천방향
-                  </Typography>
-                  <Box sx={{ display: "flex", flexDirection: "row" }}>
-                    <Box
-                      component="img"
-                      src={cafe}
-                      alt=".."
-                      sx={{ width: 30, aspectRatio: "1 / 1" }}
-                    />
-                    <Box
-                      component="img"
-                      src={food}
-                      alt=".."
-                      sx={{ width: 30, aspectRatio: "1 / 1" }}
-                    />
-                    <Box
-                      component="img"
-                      src={gas}
-                      alt=".."
-                      sx={{ width: 30, aspectRatio: "1 / 1" }}
-                    />
-                    <Box
-                      component="img"
-                      src={restroom}
-                      alt=".."
-                      sx={{ width: 30, aspectRatio: "1 / 1" }}
-                    />
+                    <Typography fontSize={16} fontWeight={500}>
+                      {area.restAreaName}
+                    </Typography>
+                    <Box sx={{ display: "flex", flexDirection: "row" }}>
+                      {icons.map((src, idx) => (
+                        <Box
+                          key={idx}
+                          component="img"
+                          src={src}
+                          alt="icon"
+                          sx={{ width: 30, aspectRatio: "1 / 1" }}
+                        />
+                      ))}
+                    </Box>
                   </Box>
-                </Box>
 
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-end",
-                    justifyContent: "space-between",
-                    gap: 1,
-                  }}
-                >
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      handleOrder("가평 휴게소 춘천 방향");
-                    }}
+                  <Box
                     sx={{
-                      width: "100%",
-                      borderRadius: 0,
-                      backgroundColor: "#097969",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-end",
+                      justifyContent: "space-between",
+                      gap: 1,
                     }}
                   >
-                    주문하기
-                  </Button>
-                  <Typography color="text.secondary" sx={{ fontSize: "14px" }}>
-                    도착 예정 시간 10:20
-                  </Typography>
+                    <Button
+                      variant="contained"
+                      onClick={() => handleOrder(area.restAreaName, area.restAreaId)}
+                      sx={{
+                        width: "100%",
+                        borderRadius: 0,
+                        backgroundColor: "#097969",
+                      }}
+                    >
+                      주문하기
+                    </Button>
+                    <Typography
+                      color="text.secondary"
+                      sx={{ fontSize: "14px" }}
+                    >
+                      도착 예정 시간 10:20
+                    </Typography>
+                  </Box>
                 </Box>
-              </Box>
+              ))}
             </Stack>
           </Box>
 
@@ -244,7 +161,7 @@ const Main = () => {
               pr: 7,
               pb: 1,
               flexDirection: "row",
-              justifyContent: "space-between"
+              justifyContent: "space-between",
             }}
           >
             <Box
@@ -341,6 +258,4 @@ const Main = () => {
   );
 };
 
-export default Main;
-
-
+export default MainPage;
