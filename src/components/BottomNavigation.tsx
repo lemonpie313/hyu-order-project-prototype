@@ -29,7 +29,6 @@ const BottomNavigation = () => {
         justifyContent: "space-between",
         position: "fixed",
         bottom: 0,
-        left: 0,
         width: "100%",
         maxWidth: 500,
       }}
