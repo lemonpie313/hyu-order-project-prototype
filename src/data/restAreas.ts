@@ -6,7 +6,7 @@ export const restAreas = [
   },
   {
     "restAreaId": 2,
-    "restAreaName": "가평휴게소 서울 방향",
+    "restAreaName": "가평휴게소 춘천 방향",
     "defaultCategoryId": 5
   }
 ];

@@ -31,12 +31,12 @@ const Menu = ({
       selectedMenuObj = restAreaMenu_1_3;
     }
   } else if (restAreaId === 2) {
-    if (categoryId === 1) {
-      selectedMenuObj = restAreaMenu_1_1;
-    } else if (categoryId === 2) {
-      selectedMenuObj = restAreaMenu_1_2;
+    if (categoryId === 5) {
+      selectedMenuObj = restAreaMenu_2_1;
+    } else if (categoryId === 6) {
+      selectedMenuObj = restAreaMenu_2_2;
     } else {
-      selectedMenuObj = restAreaMenu_1_3;
+      selectedMenuObj = restAreaMenu_2_3;
     }
   }
 

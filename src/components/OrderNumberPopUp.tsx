@@ -1,4 +1,4 @@
-import { Box, Button, Typography, Paper, Stack } from "@mui/material";
+import { Box, Button, Typography, Paper } from "@mui/material";
 
 interface PopupProps {
   open: boolean;
@@ -54,14 +54,25 @@ const OrderNumberPopup = ({ open, onConfirm, orderData }: PopupProps) => {
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
+                  alginItems: "center",
                   borderBottom: "1px solid #eee",
                   px: 2,
                   py: 1,
+                  gap: 2,
                   "&:last-child": { borderBottom: "none" },
                 }}
               >
-                <Typography>{menu.menuName}</Typography>
-                <Typography>{randomOrderNumber}</Typography>
+                <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
+                  <Typography>{menu.menuName}</Typography>
+                  <Typography>{randomOrderNumber}</Typography>
+                </Box>
+                <Button
+                  variant="contained"
+                  sx={{ bgcolor: "#00796b", "&:hover": { bgcolor: "#00695c" } }}
+                  onClick={onConfirm}
+                >
+                  픽업완료
+                </Button>
               </Box>
             );
           })}

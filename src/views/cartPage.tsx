@@ -1,21 +1,12 @@
-import {
-  Box,
-  Button,
-  Divider,
-  IconButton,
-  Typography,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Divider, Typography, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import TrashCanIcon from "../assets/icons/trashcan.png";
-import MinusIcon from "../assets/icons/minus.png";
-import PlusIcon from "../assets/icons/plus.png";
 import SetQuantity from "../components/SetQuantity.tsx";
 import { restAreas } from "../data/restAreas.ts";
 
 const CartPage = () => {
   const navigate = useNavigate();
+  const [selectedCard, setSelectedCard] = useState<string>("농협 카드");
 
   type CartItem = {
     quantity: number;
@@ -23,6 +14,8 @@ const CartPage = () => {
   };
 
   const [cart, setCart] = useState<{ [key: string]: CartItem }>({});
+
+  const [selectedOption, setSelectedOption] = useState<"매장" | "포장">("매장");
 
   const selectedRestAreaId = localStorage.getItem("selectedRestArea");
   const selectedRestArea = restAreas.find(
@@ -63,7 +56,7 @@ const CartPage = () => {
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
+          justifyContent: "flex-start",
         }}
       >
         {/* 헤더 */}
@@ -86,11 +79,19 @@ const CartPage = () => {
         </Box>
 
         {/* 매장/포장 선택 */}
-        <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2 }}>
-          <Button variant="contained" sx={{ borderRadius: "999px" }}>
+        <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 10 }}>
+          <Button
+            variant={selectedOption === "매장" ? "contained" : "outlined"}
+            onClick={() => setSelectedOption("매장")}
+            sx={{ borderRadius: "999px" }}
+          >
             매장
           </Button>
-          <Button variant="outlined" sx={{ borderRadius: "999px" }}>
+          <Button
+            variant={selectedOption === "포장" ? "contained" : "outlined"}
+            onClick={() => setSelectedOption("포장")}
+            sx={{ borderRadius: "999px" }}
+          >
             포장
           </Button>
         </Box>
@@ -191,6 +192,80 @@ const CartPage = () => {
           <Typography fontWeight="bold" sx={{ mb: 2 }}>
             결제 방법
           </Typography>
+          {/* 카드 결제 선택 */}
+          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+            <input type="radio" name="paymentMethod" id="card" defaultChecked />
+            <Typography sx={{ ml: 1 }}>카드 결제</Typography>
+          </Box>
+
+          {/* 카드 목록 */}
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              mb: 2,
+              overflowX: "auto",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                width: "max-content",
+              }}
+            >
+              {["농협 카드", "신한 카드"].map((key) => (
+                <Box
+                  key={key}
+                  onClick={() => setSelectedCard(key)}
+                  sx={{
+                    backgroundColor: "#eee",
+                    borderRadius: 1,
+                    padding: 2,
+                    width: 168,
+                    textAlign: "center",
+                    cursor: "pointer",
+                    flexShrink: 0,
+                    border:
+                      selectedCard === key
+                        ? "3px solid #00796b"
+                        : "2px solid transparent",
+                    transition: "border 0.3s ease",
+                  }}
+                >
+                  <>
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                      {key}
+                    </Typography>
+                    <Typography variant="caption">
+                      1234 **** 5678 ****
+                    </Typography>
+                  </>
+                </Box>
+              ))}
+
+              <Box
+                sx={{
+                  border: "2px dashed #ccc",
+                  borderRadius: 1,
+                  padding: 2,
+                  width: 168,
+                  textAlign: "center",
+                  color: "#999",
+                  cursor: "pointer",
+                }}
+              >
+                <Typography sx={{ fontSize: "20px", mb: 1 }}>+</Typography>
+                <Typography variant="caption">카드 추가 등록</Typography>
+              </Box>
+            </Box>
+          </Box>
+
+          {/* 다른 결제 수단 */}
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <input type="radio" name="paymentMethod" id="other" />
+            <Typography sx={{ ml: 1 }}>다른 결제 수단</Typography>
+          </Box>
         </Box>
 
         {/* 주문하기 버튼 */}
@@ -200,14 +275,20 @@ const CartPage = () => {
           onClick={() => {
             const orderData = {
               restAreaId: selectedRestAreaId,
+              id: crypto.randomUUID(), // 고유 ID
+              createdAt: new Date().toISOString(), // 생성 시간 (ISO 포맷)
+              status: "주문 확인중",
+              paymentMethod: selectedCard,
+              paymentCardNum: "1234-****-5678-****",
               items: Object.entries(cart).map(([menuName, item]) => ({
+                id: crypto.randomUUID(), // 고유 ID
                 menuName,
                 quantity: item.quantity,
                 price: item.price,
               })),
             };
-            localStorage.setItem("order", JSON.stringify(orderData));
-            navigate("../order");
+            localStorage.setItem("order_queue", JSON.stringify(orderData));
+            navigate("../order-password");
           }}
           sx={{
             position: "fixed",

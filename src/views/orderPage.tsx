@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -13,12 +13,24 @@ import orders from "../assets/icons/orders.png";
 import search from "../assets/icons/search.png";
 import { restAreas } from "../data/restAreas.ts";
 import OrderNumberPopup from "../components/OrderNumberPopUp.tsx";
+import { useSearchParams } from "react-router-dom";
 
-const steps = ["주문 접수", "조리 중", "조리 완료"];
+const steps = ["주문 접수", "조리 중", "조리 완료", "픽업 완료"];
 
 const OrderPage = () => {
+  const [searchParams] = useSearchParams();
+  const orderId = searchParams.get("orderId");
+
+  const storedOrder = localStorage.getItem("order");
+  const orders = storedOrder ? JSON.parse(storedOrder) : [];
+  const orderData = orders.find((o: any) => o.id === orderId);
+  const orderIndex = orders.findIndex((o: any) => o.id === orderId);
+  const orderStatus = orderData?.status;
+  const restAreaId = orderData?.restAreaId;
+  console.log(orderStatus);
+
   const [activeStep, setActiveStep] = useState(0); // 처음엔 0
-  const [status, setStatus] = useState("주문 확인중");
+  const [status, setStatus] = useState(orderStatus);
   const [statusDetail, setStatusDetail] = useState(
     "주문이 확정된 후에는 취소할 수 없습니다. "
   );
@@ -28,36 +40,108 @@ const OrderPage = () => {
   const [popupOpen, setPopupOpen] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setActiveStep(1); // 3초 뒤에 1로 변경
-      setStatus("조리중");
+    let firstTimer: ReturnType<typeof setTimeout>;
+    let secondTimer: ReturnType<typeof setTimeout>;
+    let thirdTimer: ReturnType<typeof setTimeout>;
+
+    if (orderStatus === "조리 중") {
+      // ✅ 이미 조리 중이면 바로 10초 타이머부터
+      setActiveStep(1);
+      setStatus("조리 중");
       setShowCancelButton(false);
       setStatusDetail(
         "입력한 도착예정 시간에 맞춰 조리가 시작됩니다. \n도착예정 시간보다 늦을 경우 미루기 버튼을 눌러주세요. \n미루기 입력이 늦을 경우 조리가 미리 시작될 수도 있습니다. "
       );
       setShowDelayButton(true);
-    }, 3000);
 
-    return () => clearTimeout(timer); // 언마운트 시 타이머 정리
-  }, []);
+      secondTimer = setTimeout(() => {
+        setActiveStep(2);
+        orders[orderIndex].status = "조리 완료";
+        setStatus(orders[orderIndex].status);
+        localStorage.setItem("order", JSON.stringify(orders));
+        setStatusDetail(
+          "조리가 완료되었습니다.\n가게 픽업대에서 예약번호를 확인하세요."
+        );
+        setShowDelayButton(false);
+        setShowOrderNumButton(true);
+      }, 10000);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setActiveStep(2); // 3초 뒤에 1로 변경
+      thirdTimer = setTimeout(() => {
+        setActiveStep(3);
+        orders[orderIndex].status = "픽업 완료";
+        setStatus(orders[orderIndex].status);
+        localStorage.setItem("order", JSON.stringify(orders));
+        setStatusDetail(
+          "픽업이 완료되었습니다."
+        );
+        setShowDelayButton(false);
+        setShowOrderNumButton(true);
+      }, 13000);
+    } else if (orderStatus === "조리 완료") {
+      setActiveStep(2);
       setStatus("조리 완료");
       setStatusDetail(
         "조리가 완료되었습니다.\n가게 픽업대에서 예약번호를 확인하세요."
       );
+      setShowCancelButton(false);
       setShowDelayButton(false);
       setShowOrderNumButton(true);
-    }, 10000);
 
-    return () => clearTimeout(timer); // 언마운트 시 타이머 정리
+      thirdTimer = setTimeout(() => {
+        setActiveStep(3);
+        orders[orderIndex].status = "픽업 완료";
+        setStatus(orders[orderIndex].status);
+        localStorage.setItem("order", JSON.stringify(orders));
+        setStatusDetail(
+          "픽업이 완료되었습니다."
+        );
+        setShowDelayButton(false);
+        setShowOrderNumButton(true);
+      }, 3000);
+
+    } else {
+      // ✅ 주문 접수 후 상태 → 3초 → 10초 순서
+      firstTimer = setTimeout(() => {
+        setActiveStep(1);
+        orders[orderIndex].status = "조리 중";
+        setStatus(orders[orderIndex].status);
+        localStorage.setItem("order", JSON.stringify(orders));
+        setShowCancelButton(false);
+        setStatusDetail(
+          "입력한 도착예정 시간에 맞춰 조리가 시작됩니다. \n도착예정 시간보다 늦을 경우 미루기 버튼을 눌러주세요. \n미루기 입력이 늦을 경우 조리가 미리 시작될 수도 있습니다. "
+        );
+        setShowDelayButton(true);
+      }, 3000);
+      secondTimer = setTimeout(() => {
+        setActiveStep(2);
+        orders[orderIndex].status = "조리 완료";
+        setStatus(orders[orderIndex].status);
+        localStorage.setItem("order", JSON.stringify(orders));
+        setStatusDetail(
+          "조리가 완료되었습니다.\n가게 픽업대에서 예약번호를 확인하세요."
+        );
+        setShowDelayButton(false);
+        setShowOrderNumButton(true);
+      }, 13000);
+      thirdTimer = setTimeout(() => {
+        setActiveStep(3);
+        orders[orderIndex].status = "픽업 완료";
+        setStatus(orders[orderIndex].status);
+        localStorage.setItem("order", JSON.stringify(orders));
+        setStatusDetail(
+          "픽업이 완료되었습니다."
+        );
+        setShowDelayButton(false);
+        setShowOrderNumButton(true);
+      }, 16000);
+    }
+
+    return () => {
+      clearTimeout(firstTimer);
+      clearTimeout(secondTimer);
+    };
   }, []);
 
-  const storedOrder = localStorage.getItem("order");
-  const orderData = storedOrder ? JSON.parse(storedOrder) : null;
-  const restAreaId = orderData?.restAreaId;
   const restAreaName =
     restAreas.find((area) => String(area.restAreaId) === String(restAreaId))
       ?.restAreaName || "휴게소 정보 없음";
@@ -81,7 +165,6 @@ const OrderPage = () => {
           width: 500, // 앱 느낌 너비 제한
           overflow: "hidden",
           minHeight: "100vh",
-          background: "green",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -194,7 +277,7 @@ const OrderPage = () => {
             {showOrderNumButton && (
               <Button
                 onClick={() => {
-                  setPopupOpen(true)
+                  setPopupOpen(true);
                 }}
                 sx={{
                   mt: 2,
