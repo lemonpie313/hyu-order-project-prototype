@@ -12,6 +12,7 @@ import orders from "../assets/icons/orders.png";
 import search from "../assets/icons/search.png";
 import { restAreas } from "../data/restAreas.ts";
 import BottomNavigation from "../components/BottomNavigation.tsx";
+import map from "../assets/map_img.png";
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -64,9 +65,12 @@ const MainPage = () => {
       >
         {/* 지도 (빈 박스) */}
         <Box
+          component="img"
+          src={map}
+          alt="image"
           sx={{
             width: "100%",
-            py: 2,
+            my: -2
           }}
         />
 
