@@ -14,6 +14,7 @@ import search from "../assets/icons/search.png";
 import { restAreas } from "../data/restAreas.ts";
 import OrderNumberPopup from "../components/OrderNumberPopUp.tsx";
 import { useSearchParams } from "react-router-dom";
+import BottomNavigation from "../components/BottomNavigation.tsx";
 
 const steps = ["주문 접수", "조리 중", "조리 완료", "픽업 완료"];
 
@@ -298,100 +299,7 @@ const OrderPage = () => {
             )}
           </Box>
           {/* 하단 네비게이션 */}
-          <Box
-            sx={{
-              display: "flex",
-              borderTop: "1px solid #ddd",
-              backgroundColor: "#097969",
-              pt: 2,
-              pl: 7,
-              pr: 7,
-              pb: 1,
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Box
-                component="img"
-                src={home}
-                alt=".."
-                sx={{ width: 40, aspectRatio: "1 / 1" }}
-              />
-              <Typography
-                color="text.secondary"
-                sx={{ fontSize: "14px", color: "white" }}
-              >
-                홈
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Box
-                component="img"
-                src={search}
-                alt=".."
-                sx={{ width: 40, aspectRatio: "1 / 1" }}
-              />
-              <Typography
-                color="text.secondary"
-                sx={{ fontSize: "14px", color: "white" }}
-              >
-                검색
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Box
-                component="img"
-                src={orders}
-                alt=".."
-                sx={{ width: 40, aspectRatio: "1 / 1" }}
-              />
-              <Typography
-                color="text.secondary"
-                sx={{ fontSize: "14px", color: "white" }}
-              >
-                주문내역
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Box
-                component="img"
-                src={my}
-                alt=".."
-                sx={{ width: 40, aspectRatio: "1 / 1" }}
-              />
-              <Typography
-                color="text.secondary"
-                sx={{ fontSize: "14px", color: "white" }}
-              >
-                마이
-              </Typography>
-            </Box>
-          </Box>
+          <BottomNavigation />
         </Box>
       </Box>
       {/* 팝업 */}
