@@ -1,4 +1,4 @@
-import { Typography, Box, Button, Divider, Stack } from "@mui/material";
+import { Typography, Box, Button, Stack } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AlarmRestAreaPopup from "../components/AlarmRestAreaPopUp.tsx";
@@ -11,6 +11,7 @@ import my from "../assets/icons/my.png";
 import orders from "../assets/icons/orders.png";
 import search from "../assets/icons/search.png";
 import { restAreas } from "../data/restAreas.ts";
+import BottomNavigation from "../components/BottomNavigation.tsx";
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -24,14 +25,16 @@ const MainPage = () => {
     setPopupOpen(true);
   };
 
-  const icons = [cafe, food, gas, restroom]
+  const icons = [cafe, food, gas, restroom];
 
   const handleConfirm = () => {
     setPopupOpen(false);
     localStorage.setItem("selectedRestArea", String(selectedRestAreaId));
     localStorage.setItem(selectedRestArea, "{}");
-    const categoryId = restAreas.find((area) => area.restAreaId == 1)?.defaultCategoryId
-    navigate(`/${selectedRestAreaId}/menu/${categoryId}`);
+    const categoryId = restAreas.find(
+      (area) => area.restAreaId == selectedRestAreaId
+    )?.defaultCategoryId;
+    navigate(`/${selectedRestAreaId}/menu`);
   };
 
   const handleCancel = () => {
@@ -77,7 +80,7 @@ const MainPage = () => {
           }}
         >
           {/* 하단 카드 영역 */}
-          <Box sx={{ p: 2 }}>
+          <Box sx={{ p: 2, mb: 10 }}>
             <Box sx={{ mb: 2 }}>
               <Typography variant="h6" gutterBottom fontWeight={700}>
                 가까운 휴게소
@@ -92,6 +95,7 @@ const MainPage = () => {
                     display: "flex",
                     flexDirection: "row",
                     justifyContent: "space-between",
+                    pb: 2,
                   }}
                 >
                   <Box
@@ -129,7 +133,9 @@ const MainPage = () => {
                   >
                     <Button
                       variant="contained"
-                      onClick={() => handleOrder(area.restAreaName, area.restAreaId)}
+                      onClick={() =>
+                        handleOrder(area.restAreaName, area.restAreaId)
+                      }
                       sx={{
                         width: "100%",
                         borderRadius: 0,
@@ -150,101 +156,7 @@ const MainPage = () => {
             </Stack>
           </Box>
 
-          {/* 하단 네비게이션 */}
-          <Box
-            sx={{
-              display: "flex",
-              borderTop: "1px solid #ddd",
-              backgroundColor: "#097969",
-              pt: 2,
-              pl: 7,
-              pr: 7,
-              pb: 1,
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Box
-                component="img"
-                src={home}
-                alt=".."
-                sx={{ width: 40, aspectRatio: "1 / 1" }}
-              />
-              <Typography
-                color="text.secondary"
-                sx={{ fontSize: "14px", color: "white" }}
-              >
-                홈
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Box
-                component="img"
-                src={search}
-                alt=".."
-                sx={{ width: 40, aspectRatio: "1 / 1" }}
-              />
-              <Typography
-                color="text.secondary"
-                sx={{ fontSize: "14px", color: "white" }}
-              >
-                검색
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Box
-                component="img"
-                src={orders}
-                alt=".."
-                sx={{ width: 40, aspectRatio: "1 / 1" }}
-              />
-              <Typography
-                color="text.secondary"
-                sx={{ fontSize: "14px", color: "white" }}
-              >
-                주문내역
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Box
-                component="img"
-                src={my}
-                alt=".."
-                sx={{ width: 40, aspectRatio: "1 / 1" }}
-              />
-              <Typography
-                color="text.secondary"
-                sx={{ fontSize: "14px", color: "white" }}
-              >
-                마이
-              </Typography>
-            </Box>
-          </Box>
+          <BottomNavigation />
         </Box>
       </Box>
       {/* 팝업 */}

@@ -48,11 +48,11 @@ export const category = [
       },
       {
         id: 3,
-        name: "카페",
+        name: "카페베네",
         subCategory: [
           {
             subCategoryId: 9,
-            subCategoryName: "투썸플레이스",
+            subCategoryName: "음료",
           },
         ],
       },
@@ -117,11 +117,11 @@ export const category = [
       },
       {
         id: 7,
-        name: "카페",
+        name: "엔제리너스",
         subCategory: [
           {
             subCategoryId: 19,
-            subCategoryName: "투썸플레이스",
+            subCategoryName: "음료",
           },
         ],
       },

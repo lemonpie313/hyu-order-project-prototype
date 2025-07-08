@@ -1,11 +1,11 @@
 export const restAreaMenu_2_3 = {
   restAreaId: 2,
   categoryId: 7,
-  categoryName: "카페",
+  categoryName: "엔제리너스",
   menus: [
     {
       subCategoryId: 19,
-      subCategoryName: "투썸플레이스",
+      subCategoryName: "음료",
       items: [
         { menuId: 52, menuName: "아메리카노", price: 4000 },
         { menuId: 53, menuName: "카페라떼", price: 4500 },

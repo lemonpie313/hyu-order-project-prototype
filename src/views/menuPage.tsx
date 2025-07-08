@@ -15,23 +15,35 @@ import { restAreas } from "../data/restAreas.ts";
 import Category from "../components/Category.tsx";
 import SubCategory from "../components/SubCategory.tsx";
 import Menu from "../components/Menu.tsx";
+import DeleteCartPopup from "../components/DeleteCartPopUp.tsx";
+import { category } from "../data/category.ts";
 
 const MenuPage = () => {
-  const { restAreaId, categoryId } = useParams();
-  const [selectedCategory, setSelectedCategory] = useState(0);
+  const { restAreaId } = useParams();
+
+  // restAreas에서 id가 일치하는 휴게소 찾기
+  const selectedRestArea = restAreas.find(
+    (restArea: any) => String(restArea.restAreaId) === restAreaId
+  );
+
+  const defaultCategory =
+    category.find(
+      (item) => Number(item?.category[0]?.id) === Number(restAreaId)
+    )?.category[0]?.id || 0;
+
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const navigate = useNavigate();
   const [alertOpen, setAlertOpen] = useState(false);
 
   const restAreaIdNum = Number(restAreaId) || 0;
-  const categoryIdNum = Number(categoryId) || 0;
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState(categoryIdNum);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(defaultCategory);
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState(1);
 
-  // restAreas에서 id가 일치하는 휴게소 찾기
-  const selectedRestArea = restAreas.find(
-    (restArea: any) => String(restArea.restAreaId) === restAreaId
+  const [popupOpen, setPopupOpen] = useState(false); // ✅ 팝업 상태
+  const [targetCategoryId, setTargetCategoryId] = useState<number | null>(null);
+  const [targetSubCategoryId, setTargetSubCategoryId] = useState<number | null>(
+    null
   );
 
   const restAreaName = selectedRestArea ? selectedRestArea.restAreaName : "";
@@ -70,6 +82,35 @@ const MenuPage = () => {
     setSnackbarOpen(true);
   };
 
+  const handleCategoryChange = (
+    newCategoryId: number,
+    firstSubCategoryId: number
+  ) => {
+    const savedCart = localStorage.getItem(restAreaName);
+    if (savedCart && savedCart !== "{}") {
+      setTargetCategoryId(newCategoryId);
+      setTargetSubCategoryId(firstSubCategoryId);
+      setPopupOpen(true); // 장바구니 있으면 팝업
+    } else {
+      setSelectedCategoryId(newCategoryId);
+      setSelectedSubCategoryId(firstSubCategoryId);
+    }
+  };
+
+  const handleConfirm = () => {
+    localStorage.setItem(restAreaName, "{}"); // 장바구니 비우기
+    setCart({});
+    if (targetCategoryId !== null && targetSubCategoryId !== null) {
+      setSelectedCategoryId(targetCategoryId);
+      setSelectedSubCategoryId(targetSubCategoryId);
+    }
+    setPopupOpen(false);
+  };
+
+  const handleCancel = () => {
+    setPopupOpen(false);
+  };
+
   return (
     <Box
       sx={{
@@ -102,11 +143,11 @@ const MenuPage = () => {
               py: 2,
             }}
           >
-            <Typography variant="subtitle1">가평휴게소 서울방향</Typography>
+            <Typography variant="subtitle1">{restAreaName}</Typography>
           </Box>
 
           {/* 검색창 */}
-          <Box sx={{ px: 2, py: 1 }}>
+          {/* <Box sx={{ px: 2, py: 1 }}>
             <Paper
               component="form"
               sx={{
@@ -121,16 +162,13 @@ const MenuPage = () => {
               <InputBase sx={{ ml: 1, flex: 1 }} placeholder="검색" />
               <Box />
             </Paper>
-          </Box>
+          </Box> */}
         </Box>
         {/* 카테고리 탭 */}
         <Category
           restAreaId={restAreaIdNum}
           selectedCategoryId={selectedCategoryId}
-          onCategoryChange={(categoryId, firstSubCategoryId) => {
-            setSelectedCategoryId(categoryId);
-            setSelectedSubCategoryId(firstSubCategoryId);
-          }}
+          onCategoryChange={handleCategoryChange}
         />
         <SubCategory
           restAreaId={restAreaIdNum}
@@ -142,14 +180,19 @@ const MenuPage = () => {
 
       <Box
         sx={{
-          width: 500, // 앱 느낌 너비 제한
+          width: 500,
           overflow: "hidden",
           minHeight: "100vh",
-          mt: 25,
+          mt: 20,
         }}
       >
         {/* 메뉴 리스트 */}
-        <Menu restAreaId={restAreaIdNum} categoryId={selectedCategoryId} subCategoryId={selectedSubCategoryId} onAddToCart={handleAddToCart} />
+        <Menu
+          restAreaId={restAreaIdNum}
+          categoryId={selectedCategoryId}
+          subCategoryId={selectedSubCategoryId}
+          onAddToCart={handleAddToCart}
+        />
 
         <Box
           sx={{
@@ -208,19 +251,25 @@ const MenuPage = () => {
       </Box>
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={2000} // 2초 뒤 자동 닫힘 (원하면 조절 가능)
+        autoHideDuration={1000} // 2초 뒤 자동 닫힘 (원하면 조절 가능)
         onClose={() => setSnackbarOpen(false)}
         message="선택하신 메뉴가 추가되었습니다."
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        sx={{ mb: 10, maxWidth: 500, width: "100%", mx: "auto" }}
+        sx={{ mb: 10, maxWidth: "calc(100vw - 32px)", width: "100%" }}
       />
       <Snackbar
         open={alertOpen}
-        autoHideDuration={2000} // 2초 뒤 자동 종료
+        autoHideDuration={1000} // 2초 뒤 자동 종료
         onClose={() => setAlertOpen(false)}
         message="메뉴를 먼저 담아주세요."
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        sx={{ mb: 10, maxWidth: 500, width: "100%", mx: "auto" }}
+        sx={{ mb: 10, maxWidth: "calc(100vw - 32px)", width: "100%" }}
+      />
+      <DeleteCartPopup
+        open={popupOpen}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        selectedRestArea={restAreaName}
       />
     </Box>
   );
