@@ -8,6 +8,7 @@ import {
   ListItem,
   ListItemText,
   Stack,
+  BottomNavigation,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { restAreas } from "../data/restAreas";
@@ -137,6 +138,7 @@ const OrderHistoryPage = () => {
           )}
         </Box>
       </Box>
+      <BottomNavigation />
     </Box>
   );
 };
