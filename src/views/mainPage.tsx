@@ -69,8 +69,9 @@ const MainPage = () => {
           src={map}
           alt="image"
           sx={{
-            width: "100%",
-            my: -2
+            width: "100%", // 화면 폭에 맞춤
+            mb: -40, // 아래 요소랑 겹치는 정도 (원하는 값으로 조정 가능)
+            objectFit: "cover", // 자연스러운 잘림
           }}
         />
 
